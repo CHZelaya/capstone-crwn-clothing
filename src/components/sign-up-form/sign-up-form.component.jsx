@@ -15,7 +15,9 @@ const SignUpForm = () => {
     const [formFields, setFormFields] = useState(defaultFormFields);
     const { displayName, email, password, confirmPassword } = formFields;
 
-    // console.log("Global Console Log for Form fields: ", formFields)
+    const resetFormFields = () => {
+        setFormFields(defaultFormFields);
+    }
 
     const handleChange = (event) => {
         const { name, value } = event.target;
@@ -28,7 +30,26 @@ const SignUpForm = () => {
         // Todo: 1. Check that password and Confirm Password are correct
         // Todo: 2. Check to see if user is authenticated with email and password
         // Todo: 3. Create a user document from information returned from Authentication
+        if (password !== confirmPassword) {
+            alert("Passwords do not match!");
+            return;
+        }
+        try {
+            const { user } = await createAuthUserWithEmailAndPassword(
+                email,
+                password
+            );
 
+            await createUserDocumentFromAuth(user, { displayName });
+            resetFormFields();
+
+
+        } catch (error) {
+            if (error.code === 'auth/email-already-in-use') {
+                alert('Cannot create user, Email address already in use.')
+            } else
+                console.log('User creation encountered an error', error)
+        }
     }
 
     return (

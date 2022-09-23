@@ -48,7 +48,10 @@ export const signInWithGooglePopup = () => signInWithPopup(auth, googleProvider)
 export const signInWithGoogleRedirect = () => signInWithRedirect(auth, googleProvider);
 export const db = getFirestore();
 
-export const createUserDocumentFromAuth = async (userAuth) => {
+export const createUserDocumentFromAuth = async (
+    userAuth,
+    additionalInformation = {}
+) => {
     if (!userAuth) return; //! If no user, return nothing.
 
     const userDocRef = doc(db, 'users', userAuth.uid);
@@ -56,13 +59,8 @@ export const createUserDocumentFromAuth = async (userAuth) => {
     console.log(userDocRef);
 
     const userSnapshot = await getDoc(userDocRef);
-    console.log(userSnapshot);
-    console.log(userSnapshot.exists());
-
-
-    //* "!" Reverses the boolean, returning true will equal false, returning false will equal true.
-    //* Ergo, if a user exists, .exists() method will return true, ! will flip it to false and the code block following the if statement will not run. 
-    //* Likewise, if a user does not exist, .exists() method will return false, ! will flip the boolean to true and the following code block will run.
+    // console.log(userSnapshot);
+    // console.log(userSnapshot.exists());
 
     if (!userSnapshot.exists()) {
         const { displayName, email } = userAuth;
@@ -73,6 +71,7 @@ export const createUserDocumentFromAuth = async (userAuth) => {
                 displayName,
                 email,
                 createdAt,
+                ...additionalInformation
             });
         } catch (error) {
             console.log("error creating user", error.message);
@@ -85,7 +84,7 @@ export const createUserDocumentFromAuth = async (userAuth) => {
 export const createAuthUserWithEmailAndPassword = async (email, password) => {
     if (!email || !password) return; //! If no email or password, return nothing.
 
-    await createUserWithEmailAndPassword(auth, email, password);
+    return await createUserWithEmailAndPassword(auth, email, password);
 
 
 };
