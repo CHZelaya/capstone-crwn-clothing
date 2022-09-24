@@ -1,7 +1,8 @@
 //! Imports
-import { useState } from 'react'
+import { useState, useContext } from 'react'
 import FormInput from '../form-input/form-input.component.jsx';
 import Button from '../button/button.component.jsx';
+import { UserContext } from '../../contexts/user.context.jsx';
 import {
     signInWithGooglePopup,
     createUserDocumentFromAuth,
@@ -19,14 +20,11 @@ const defaultFormFields = {
 //! Functional Component
 const SignInForm = () => {
 
-    // !Methods 
-    const signInWithGoogle = async () => {
-        const { user } = await signInWithGooglePopup();
-        await createUserDocumentFromAuth(user);
-    }
-
+    //! useState Hook
     const [formFields, setFormFields] = useState(defaultFormFields);
     const { email, password } = formFields;
+
+    const { setCurrentUser } = useContext(UserContext)
 
     const handleChange = (event) => {
         const { name, value } = event.target;
@@ -34,12 +32,22 @@ const SignInForm = () => {
         setFormFields({ ...formFields, [name]: value })
     }
 
+    // !Methods 
+    const signInWithGoogle = async () => {
+        const { user } = await signInWithGooglePopup();
+        await createUserDocumentFromAuth(user);
+    }
+
+    const resetFormFields = () => {
+        setFormFields(defaultFormFields);
+    }
+
     const handleSubmit = async (event) => {
         event.preventDefault();
 
         try {
-            const response = await signInAuthUserWithEmailAndPassword(email, password)
-            return console.log(response)
+            const { user } = await signInAuthUserWithEmailAndPassword(email, password)
+            setCurrentUser(user);
         } catch (error) {
             switch (error.code) {
                 case 'auth/wrong-password':
@@ -56,9 +64,10 @@ const SignInForm = () => {
         resetFormFields();
     }
 
-    const resetFormFields = () => {
-        setFormFields(defaultFormFields);
-    }
+
+
+
+
 
 
 
