@@ -40,8 +40,18 @@ const SignInForm = () => {
         try {
             const response = await signInAuthUserWithEmailAndPassword(email, password)
             return console.log(response)
-        } catch (e) {
-            console.log(e)
+        } catch (error) {
+            switch (error.code) {
+                case 'auth/wrong-password':
+                    alert('Incorrect Credientials')
+                    break;
+                case 'auth/user-not-found':
+                    alert('No user associated with email.')
+                    break;
+                default:
+                    console.log(error)
+            }
+
         }
         resetFormFields();
     }
@@ -73,9 +83,10 @@ const SignInForm = () => {
                 name="password"
                 value={password}
             />
+
             <div className="buttons-container">
                 <Button buttonType="submit" onClick={handleSubmit}> Sign In</Button>
-                <Button buttonType="google" onClick={signInWithGoogle}> Google Sign In</Button>
+                <Button type="button" buttonType="google" onClick={signInWithGoogle}> Google Sign In</Button>
             </div>
 
         </div>
