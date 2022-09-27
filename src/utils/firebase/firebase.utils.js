@@ -8,6 +8,7 @@ import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
     signOut,
+    onAuthStateChanged,
 } from 'firebase/auth';
 
 import {
@@ -19,11 +20,6 @@ import {
 } from 'firebase/firestore';
 
 
-
-
-
-
-// TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
@@ -38,6 +34,7 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const firebaseApp = initializeApp(firebaseConfig);
+
 
 const googleProvider = new GoogleAuthProvider();
 
@@ -101,4 +98,7 @@ export const signOutUser = async () => {
     await signOut(auth);
     return;
 };
+
+export const onAuthStateChangedListener = (callback) => onAuthStateChanged(auth, callback);
+
 
